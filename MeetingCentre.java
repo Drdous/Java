@@ -1,6 +1,8 @@
 package cz.unicorncollege.bt.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MeetingCentre extends MeetingObject {
@@ -11,13 +13,13 @@ public class MeetingCentre extends MeetingObject {
 		this.meetingRooms = new ArrayList<>();
 	}
 
+	public List<MeetingRoom> getMeetingRooms() {
+		return meetingRooms;
+	}
+
 	@Override
 	public String toString() {
 		return "Meeting centre " + this.name + " with code: " + this.code + " and description: " + this.description;
-	}
-
-	public List<MeetingRoom> getMeetingRooms() {
-		return meetingRooms;
 	}
 
 	public void setMeetingRooms(List<MeetingRoom> meetingRooms) {
@@ -30,5 +32,14 @@ public class MeetingCentre extends MeetingObject {
 
 	public String toCSV() {
 		return this.name + "," + this.code + "," + this.description + ",,," + "\n";
+	}
+
+	public void roomSort() {
+		Collections.sort(meetingRooms, new Comparator<MeetingRoom>() {
+			@Override
+			public int compare(MeetingRoom c1, MeetingRoom c2) {
+				return c1.getCode().compareTo(c2.getCode());
+			}
+		});
 	}
 }

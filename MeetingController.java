@@ -2,9 +2,9 @@ package cz.unicorncollege.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.Iterator;
+import java.util.List;
+
 import cz.unicorncollege.bt.model.MeetingCentre;
 import cz.unicorncollege.bt.model.MeetingRoom;
 import cz.unicorncollege.bt.utils.Choices;
@@ -15,24 +15,17 @@ public class MeetingController {
 
 	/**
 	 * Method to initialize data from the saved datafile.
-	 * 
-	 * @throws IOException
 	 */
-	public void init() throws IOException {
+	public void init() {
 
-		// TODO: nacist z ulozeneho souboru vsechna meeting centra a vypsat je
-		// na obrazovku
+		// TODO: nacist z ulozeneho souboru vsechna meeting centra, mistnosti a
+		// rezervace
 		meetingCentres = FileParser.loadDataFromFile();
-		for (MeetingCentre mc : meetingCentres) {
-			System.out.println(mc);
-		}
 	}
 
 	/**
 	 * Method to list all meeting centres to user and give him some options what
 	 * to do next.
-	 * 
-	 * @throws IOException
 	 */
 	public void listAllMeetingCentres() throws IOException {
 
@@ -93,13 +86,19 @@ public class MeetingController {
 	public void showMeetingCentreDetails(String input) {
 		// TODO: doplnit nacteni prislusneho meeting centra a vypsani jeho
 		// zakladnih hodnot
+		boolean found = false;
 		MeetingCentre tmp = null;
 		for (MeetingCentre mc : meetingCentres) {
 			if (mc.getCode().equals(input)) {
 				System.out.println(mc);
 				tmp = mc;
-				// break;
+				found = true;
+				break;
 			}
+		}
+		if (!found) {
+			System.out.println("Wrong code, try it again");
+			return;
 		}
 		// System.out.println(tmp);
 		List<String> choices = new ArrayList<String>();
@@ -115,7 +114,7 @@ public class MeetingController {
 			for (String ch : choices) {
 				System.out.println(ch);
 			}
-			
+
 			String chosenOption = Choices.getInput(
 					"Choose option: (including code after '-', example 1-M01 (Not for choice 1 - Show meeting rooms))");
 			int option = chosenOption.contains("-") ? Integer.parseInt(chosenOption.substring(0, 1))
@@ -147,6 +146,9 @@ public class MeetingController {
 				String codeOfMr = Choices.getInput("Enter code of MeetingRoom: ");
 				String description = Choices.getInput("Enter description of MeetingRoom: ");
 				int capacity = Integer.parseInt(Choices.getInput("Enter capacity of MeetingRoom: "));
+				if (capacity < 0 || capacity > 100) {
+					System.out.println("Wrong input");
+				}
 				String hasVideoConference = Choices.getInput("Has this MeetingRoom video conference? (YES/NO): ");
 				tmp.addMeetingRooms(
 						new MeetingRoom(name, codeOfMr, description, capacity, hasVideoConference.equals("YES"), tmp));
@@ -155,10 +157,11 @@ public class MeetingController {
 				MeetingRoom tmp2 = null;
 				for (MeetingRoom mr : tmp.getMeetingRooms()) {
 					if (mr.getCode().equals(code)) {
-					tmp2 = mr;
-					break;
+						tmp2 = mr;
+						break;
 					}
 				}
+
 				List<String> choicesEdit = new ArrayList<String>();
 				choicesEdit.add("Name");
 				choicesEdit.add("Code");
@@ -248,19 +251,22 @@ public class MeetingController {
 	/**
 	 * Method to delete by id
 	 */
-
 	public void deleteMeetingCentre(String input) {
-
-		// String locationFilter = Choices.getInput("Enter name of
-		// MeetingCentre: ");
 		// TODO: doplnit vymazani meeting centra a jeho mistnosti a vypsani
 		// potvrzeni o smazani
-		Iterator<MeetingCentre> i = meetingCentres.iterator();
-		while (i.hasNext()) {
-			MeetingCentre mc = i.next();
-			if (mc.getCode().equals(input)) {
-				i.remove();
+		String confirmation = Choices.getInput("Are you sure? (YES/NO): ");
+		if (confirmation.equals("YES")) {
+			Iterator<MeetingCentre> i = meetingCentres.iterator();
+			while (i.hasNext()) {
+				MeetingCentre mc = i.next();
+				if (mc.getCode().equals(input)) {
+					i.remove();
+					System.out.println("Meeting Centre was successfully removed");
+				}
 			}
+		}
+		else {
+			return;
 		}
 	}
 
